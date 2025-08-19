@@ -54,20 +54,26 @@
 ```mermaid
 graph TD
     subgraph "您的電腦或手機"
-    User[使用者]
-    Browser["瀏覽器 (前端應用)"]
+        User[使用者]
+        Browser["瀏覽器 (前端應用)"]
     end
+
     subgraph "遠端伺服器"
-    Server["後端伺服器 (應用層)"]
-    Database[("資料庫 (資料層)")]
+        Server["後端伺服器 (應用層)"]
+        Database[("資料庫 (資料層)")]
     end
-    User -- "1. 互動操作 (點擊、輸入)" --> Browser
-    Browser -- "2. 發送 HTTP 請求" --> Server
-    Server -- "5. 回應 JSON 資料" --> Browser
-    Browser -- "6. 更新畫面" --> User
-    Server -- "3. 存取資料 (讀/寫)" --> Database
-    Database -- "4. 回傳結果" --> Server
+
+    %% -- 流程圖 --
+    User -- |1. 互動操作 (點擊、輸入) --> Browser
+    Browser -- |2. 發送 HTTP 請求 --> Server
+    Server -- |3. 存取資料 (讀/寫) --> Database
+    Database -- |4. 回傳結果 --> Server
+    Server -- |5. 回應 JSON 資料 --> Browser
+    Browser -- |6. 更新畫面 --> User
+
+    %% -- 節點樣式 --
     style User fill:#d4edda,stroke:#155724
     style Browser fill:#cce5ff,stroke:#004085
     style Server fill:#f8d7da,stroke:#721c24
     style Database fill:#fff3cd,stroke:#856404
+```
