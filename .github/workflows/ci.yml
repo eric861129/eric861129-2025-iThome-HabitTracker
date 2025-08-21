@@ -41,3 +41,9 @@ jobs:
         run: |
           pip install flake8
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      # 步驟五：使用 pytest 進行測試
+      - name: Test with pytest
+        run: |
+          pip install pytest
+          pytest
