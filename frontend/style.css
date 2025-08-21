@@ -1,0 +1,64 @@
+/* --- Google Font Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Nunito+Sans:wght@600;700&display=swap');
+
+/* --- CSS Variables from Style Guide --- */
+:root {
+    /* Colors */
+    --color-primary: #5A9AAB;
+    --color-accent: #F5A685;
+    --color-text: #2C3E50;
+    --color-text-subtle: #8D99AE;
+    --color-background: #F9FAFB;
+    --color-divider: #EAEFF4;
+    --color-white: #FFFFFF;
+
+    /* Typography */
+    --font-heading: 'Nunito Sans', sans-serif;
+    --font-body: 'Lato', sans-serif;
+
+    /* Spacing */
+    --spacing-sm: 0.5rem;  /* 8px */
+    --spacing-md: 1rem;    /* 16px */
+    --spacing-lg: 1.5rem;  /* 24px */
+    --spacing-xl: 2rem;    /* 32px */
+}
+
+/* --- Base & Body Reset --- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+}
+
+/* --- Main App Layout --- */
+.app-layout {
+    display: grid;
+    /* Defines two columns: a fixed 240px sidebar and a main content area that takes the rest of the space (1fr) */
+    grid-template-columns: 240px 1fr;
+    height: 100vh; /* Make the layout fill the entire viewport height */
+}
+
+/* --- Sidebar & Main Content Styling for Preview --- */
+.sidebar {
+    background-color: var(--color-white);
+    border-right: 1px solid var(--color-divider);
+    padding: var(--spacing-xl);
+}
+
+.main-content {
+    padding: var(--spacing-xl);
+    overflow-y: auto; /* Add scroll for main content if it overflows */
+}
