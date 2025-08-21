@@ -50,7 +50,7 @@
 |-- requirements.txt        # 專案依賴套件
 |-- .gitignore
 |-- /instance/
-|   |-- app.db              # (開發用) SQLite 資料庫檔案
+|   |-- database.db              # (開發用) SQLite 資料庫檔案
 |-- /app/                   # **核心應用程式資料夾**
 |   |-- __init__.py         # 應用程式工廠 (create_app)
 |   |-- models.py           # SQLAlchemy 資料庫模型定義
