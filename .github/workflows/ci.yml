@@ -1,0 +1,43 @@
+# .github/workflows/ci.yml
+
+# Workflow 的名稱
+name: Python CI
+
+# 觸發此 workflow 的事件
+on:
+  push:
+    branches: [main]
+
+# 定義一個或多個 job
+jobs:
+  build:
+    # 指定 job 運行的虛擬機環境
+    runs-on: ubuntu-latest
+
+    # job 的步驟
+    steps:
+      # 步驟一：Check out 專案程式碼
+      # 使用官方的 actions/checkout action
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # 步驟二：設定 Python 環境
+      # 使用官方的 actions/setup-python action
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      # 步驟三：安裝依賴套件
+      # 首先升級 pip，然後安裝 requirements.txt 中的套件
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 步驟四：使用 flake8 進行程式碼風格檢查
+      # flake8 會檢查程式碼是否符合 PEP 8 風格指南
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
