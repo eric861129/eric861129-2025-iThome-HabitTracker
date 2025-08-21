@@ -1,0 +1,413 @@
+openapi: 3.0.3
+info:
+  title: Habit Tracker & Mood Journal API
+  description: |
+    這是「習慣養成與心情日誌」應用程式的官方 API 文件。
+    This is the official API documentation for the Habit Tracker & Mood Journal application.
+    It provides endpoints for user authentication, managing habits, and logging moods.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: API 版本 1
+tags:
+  - name: Auth
+    description: 使用者認證 (註冊、登入)
+  - name: Habits
+    description: 使用者習慣相關操作
+  - name: Habit Trackings
+    description: 習慣打卡相關操作
+  - name: Moods
+    description: 每日心情記錄相關操作
+
+# 1. Paths
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: 註冊新使用者
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegister"
+      responses:
+        "201":
+          description: 使用者建立成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: 輸入無效或 Email 已存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: 使用者登入
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        "200":
+          description: 登入成功，返回 token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        "401":
+          description: 憑證無效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /habits:
+    get:
+      tags:
+        - Habits
+      summary: 取得當前使用者的所有習慣
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: 成功，返回習慣列表
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Habit"
+        "401":
+          description: 未經授權
+    post:
+      tags:
+        - Habits
+      summary: 建立一個新習慣
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HabitInput"
+      responses:
+        "201":
+          description: 習慣建立成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Habit"
+        "400":
+          description: 輸入無效
+        "401":
+          description: 未經授權
+
+  /habits/{habitId}:
+    get:
+      tags:
+        - Habits
+      summary: 透過 ID 取得特定習慣
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: habitId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: 成功，返回指定的習慣
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Habit"
+        "401":
+          description: 未經授權
+        "404":
+          description: 找不到指定的習慣
+    put:
+      tags:
+        - Habits
+      summary: 更新一個現有的習慣
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: habitId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HabitInput"
+      responses:
+        "200":
+          description: 習慣更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Habit"
+        "401":
+          description: 未經授權
+        "404":
+          description: 找不到指定的習慣
+    delete:
+      tags:
+        - Habits
+      summary: 刪除一個習慣
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: habitId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: 習慣刪除成功
+        "401":
+          description: 未經授權
+        "404":
+          description: 找不到指定的習慣
+
+  /habit-trackings:
+    post:
+      tags:
+        - Habit Trackings
+      summary: 為指定日期建立一筆習慣打卡紀錄
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HabitTrackingInput"
+      responses:
+        "201":
+          description: 打卡紀錄建立成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HabitTracking"
+        "400":
+          description: 輸入無效，或該日期已打卡
+        "401":
+          description: 未經授權
+
+  /moods:
+    post:
+      tags:
+        - Moods
+      summary: 記錄或更新指定日期的心情
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoodLogInput"
+      responses:
+        "201":
+          description: 心情記錄建立或更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MoodLog"
+        "400":
+          description: 輸入無效
+        "401":
+          description: 未經授權
+
+# 2. Components
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-08-20T10:00:00Z"
+
+    UserRegister:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: "strongpassword123"
+
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: "strongpassword123"
+
+    Habit:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        user_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "每天閱讀 20 分鐘"
+        type:
+          type: string
+          enum: [positive, negative]
+          example: positive
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-08-20T11:00:00Z"
+
+    HabitInput:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          example: "每天閱讀 20 分鐘"
+        type:
+          type: string
+          enum: [positive, negative]
+          example: positive
+
+    HabitTracking:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 201
+        habit_id:
+          type: integer
+          example: 101
+        date:
+          type: string
+          format: date
+          example: "2025-08-21"
+        notes:
+          type: string
+          example: "讀了《原子習慣》一個章節。"
+
+    HabitTrackingInput:
+      type: object
+      required:
+        - habit_id
+        - date
+      properties:
+        habit_id:
+          type: integer
+          example: 101
+        date:
+          type: string
+          format: date
+          example: "2025-08-21"
+        notes:
+          type: string
+          example: "讀了《原子習慣》一個章節。"
+
+    MoodLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 301
+        user_id:
+          type: integer
+          example: 1
+        mood_level:
+          type: integer
+          description: "心情等級，1 (最差) 到 5 (最好) 的整數"
+          example: 4
+        date:
+          type: string
+          format: date
+          example: "2025-08-21"
+        notes:
+          type: string
+          example: "完成一件重要任務，覺得很有生產力。"
+
+    MoodLogInput:
+      type: object
+      required:
+        - mood_level
+        - date
+      properties:
+        mood_level:
+          type: integer
+          description: "心情等級，1 (最差) 到 5 (最好) 的整數"
+          example: 4
+        date:
+          type: string
+          format: date
+          example: "2025-08-21"
+        notes:
+          type: string
+          example: "完成一件重要任務，覺得很有生產力。"
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: "找不到對應資源"
