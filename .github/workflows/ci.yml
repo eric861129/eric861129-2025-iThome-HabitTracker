@@ -44,6 +44,8 @@ jobs:
 
       # 步驟五：使用 pytest 進行測試
       - name: Test with pytest
+        env:
+          PYTHONPATH: .
         run: |
           pip install pytest
           pytest
