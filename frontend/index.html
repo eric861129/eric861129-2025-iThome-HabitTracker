@@ -20,5 +20,16 @@
         <!-- 之後會根據路由動態載入頁面內容 -->
       </main>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/dashboard')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Dashboard data:', data);
+                })
+                .catch(error => console.error('Error fetching dashboard data:', error));
+        });
+    </script>
   </body>
 </html>

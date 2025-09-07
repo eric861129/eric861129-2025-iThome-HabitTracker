@@ -1,11 +1,14 @@
 import os
-from flask import Flask
+from flask import Flask, send_from_directory
 from config import Config
 from .models import db
 from flask_migrate import Migrate # 匯入 Migrate
 
 def create_app(config_class=Config):
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, 
+                instance_relative_config=True,
+                static_folder='../../frontend', 
+                static_url_path='/')
     app.config.from_object(config_class)
 
     # Ensure the instance folder exists
@@ -22,10 +25,16 @@ def create_app(config_class=Config):
     from .api.auth import auth_bp
     from .api.moods import moods_bp
     from .api.trackings import trackings_bp
+    from .api.dashboard import dashboard_bp
 
     app.register_blueprint(habits_bp, url_prefix='/api')
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(moods_bp, url_prefix='/api')
     app.register_blueprint(trackings_bp, url_prefix='/api')
+    app.register_blueprint(dashboard_bp, url_prefix='/api')
+
+    @app.route('/')
+    def serve_index():
+        return send_from_directory(app.static_folder, 'index.html')
 
     return app

@@ -44,7 +44,7 @@ def client():
         test_user = User(
             id=1,
             email='test@example.com',
-            password_hash=generate_password_hash('password')
+            password_hash=generate_password_hash('password', method='pbkdf2:sha256')
         )
         db.session.add(test_user)
         db.session.commit()
